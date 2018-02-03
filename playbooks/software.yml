@@ -122,4 +122,3 @@
         path: /etc/systemd/system/caddy.service
         regexp: '^ProtectHome.*'
         line: 'ProtectHome=false'
-
