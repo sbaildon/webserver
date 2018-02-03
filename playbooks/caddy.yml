@@ -1,0 +1,23 @@
+---
+- hosts: droplet
+  tasks:
+
+    - name: "Copy Caddyfile"
+      copy:
+        src: "../resources/Caddyfile"
+        dest: "/etc/caddy/Caddyfile"
+        mode: 0644
+
+    - name: "Copy signup file"
+      copy:
+        src: "../resources/signup.txt"
+        dest: "/etc/caddy/signup.txt"
+        mode: 0644
+
+    - name: "Create serve directory"
+      file:
+        path: "{{ droplet.serve.root_path }}"
+        state: directory
+        mode: 0755
+        owner: "{{ droplet.users.unprivileged.name }}"
+        group: "{{ droplet.users.unprivileged.name }}"

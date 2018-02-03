@@ -1,0 +1,59 @@
+---
+- hosts: digitalocean
+  tasks:
+  - name: "Deploy SSH key to DO"
+    digital_ocean_sshkey:
+      state: present
+      name: "Public Key"
+      oauth_token: "{{ do.api_token }}"
+      ssh_pub_key: "{{ ssh_pub_key }}"
+    register: key
+
+  - name: "Create droplet"
+    digital_ocean:
+      state: present
+      command: droplet
+      name: "{{ do.droplet.name }}"
+      size_id: "{{ do.droplet.size_id }}"
+      region_id: "{{ do.droplet.region  }}"
+      image_id: "{{ do.droplet.image_id }}"
+      backups_enabled: "{{ do.droplet.backups_enabled  }}"
+      api_token: "{{ do.api_token }}"
+      ssh_key_ids: "{{ key.data.ssh_key.id }}"
+      wait_timeout: 500
+      unique_name: true
+      ipv6: false
+    register: do_droplet
+
+  - name: "Prompt for ssh port if the VM already existed"
+    pause:
+      prompt: "SSH port"
+    register: custom_ssh_port
+    when: not do_droplet.changed
+
+  - name: "Set custom ssh port"
+    set_fact:
+      ansible_port: "{{ custom_ssh_port.user_input | int }}"
+    when: custom_ssh_port.user_input is defined
+
+  - name: "Gather ssh public key"
+    command: "ssh-keyscan -t ecdsa {{ do_droplet.droplet.ip_address }}"
+    register: ssh_keyscan_public_key
+    when: do_droplet.changed
+
+  - name: "Add VM public key to known hosts"
+    known_hosts:
+      name: "{{ do_droplet.droplet.ip_address }}"
+      key: "{{ item }}"
+    with_items: "{{ ssh_keyscan_public_key.stdout_lines }}"
+    when: do_droplet.changed
+
+  - name: "Add droplet to inventory"
+    add_host:
+      name: "{{ do_droplet.droplet.name }}"
+      groups: "droplet"
+      ansible_host: "{{ do_droplet.droplet.ip_address }}"
+      ansible_python_interpreter: "/usr/bin/python3"
+      ansible_user: root
+      ansible_port: " {{ custom_ssh_port.user_input | default(22) | int }}"
+

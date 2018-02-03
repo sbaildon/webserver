@@ -1,0 +1,55 @@
+---
+- hosts: droplet
+  tasks:
+
+  - name: "Create docker network for passbolt"
+    docker_network:
+      name: "{{ passbolt.network.name }}"
+
+  - name: "Fetch mysql docker image"
+    docker_image:
+      name: mysql
+
+  - name: "Start mysql"
+    docker_container:
+      name: passbolt_mysql
+      image: mysql
+      state: started
+      volumes:
+        - "passbolt_data:/var/lib/mysql"
+      networks:
+        - name: "{{ passbolt.network.name }}"
+      env:
+        MYSQL_ROOT_PASSWORD: "{{ passbolt.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ passbolt.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ passbolt.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ passbolt.MYSQL_PASSWORD }}"
+
+  - name: "Fetch passbolt docker image"
+    docker_image:
+      name: passbolt/passbolt
+
+  - name: "Install passbolt entropy generator requirement"
+    dnf:
+      name: rng-tools
+
+  - name: "Create some entropy"
+    shell: "rngd -r /dev/urandom"
+
+  - name: "Start passbolt"
+    docker_container:
+      name: passbolt
+      image: passbolt/passbolt
+      state: started
+      env:
+        DB_HOST: passboltmysql
+        DB_USER: "{{ passbolt.MYSQL_USER }}"
+        DB_PASS: "{{ passbolt.MYSQL_PASSWORD }}"
+        DB_NAME: "{{ passbolt.MYSQL_DATABASE }}"
+        URL: "{{ passbolt.URL }}"
+      ports:
+        - "29170:443"
+      networks:
+        - name: "{{ passbolt.network.name }}"
+          links:
+            - "passbolt_mysql:passboltmysql"

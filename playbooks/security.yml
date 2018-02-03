@@ -1,0 +1,27 @@
+---
+- hosts: droplet
+
+  vars_prompt:
+  - name: "ssh_port"
+    prompt: "Enter a new ssh port"
+    confirm: yes
+    private: no
+
+  tasks:
+  - name: "Change SSH port"
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: 'Port\s\d'
+      line: "Port {{ ssh_port }}"
+
+  - name: "Disallow root login"
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^PermitRootLogin.*$'
+      line: 'PermitRootLogin no'
+
+  - name: "Restart sshd"
+    systemd:
+      name: sshd
+      enabled: yes
+      state: restarted
