@@ -48,6 +48,7 @@
         DB_NAME: "{{ passbolt.MYSQL_DATABASE }}"
         URL: "{{ passbolt.URL }}"
         SSL: "{{ passbolt.SSL }}"
+        REGISTRATION: "{{ passbolt.REGISTRATION }}"
       ports:
         - "29170:443"
       networks:
