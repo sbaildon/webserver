@@ -8,16 +8,6 @@
     private: no
 
   tasks:
-  - name: "Install fail2ban"
-    dnf:
-      name: "fail2ban"
-
-  - name: "Enable and start fail2ban"
-    systemd:
-      name: fail2ban
-      enabled: yes
-      start: started
-
   - name: "Change SSH port"
     lineinfile:
       path: /etc/ssh/sshd_config
