@@ -28,6 +28,10 @@
       dnf:
         name: ImageMagick
 
+    - name: "Install jq"
+      dnf:
+        name: jq
+
     - name: "Make ui.baildon.co"
       make:
         chdir: "{{ droplet.serve.root_path }}/ui.baildon.co"
