@@ -56,7 +56,7 @@
     block:
     - name: "Clone snakeway"
       git:
-        repo: "git@gitlab.com/sBaildon/snakeway.git"
+        repo: "git@gitlab.com:sBaildon/snakeway.git"
         dest: "{{ droplet.serve.root_path }}/dev1.baildon.co"
 
     - name: "Make snakeway"
