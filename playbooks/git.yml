@@ -52,6 +52,20 @@
     become: yes
     become_user: "{{ droplet.users.unprivileged.name }}"
 
+  - name: "snakeway"
+    block:
+    - name: "Clone snakeway"
+      git:
+        repo: "git@gitlab.com/sBaildon/snakeway.git"
+        dest: "{{ droplet.serve.root_path }}/dev1.baildon.co"
+
+    - name: "Make snakeway"
+      make:
+        chdir: "{{ droplet.serve.root_path }}/snakeway"
+
+    become: yes
+    become_user: "{{ droplet.users.unprivileged.name }}"
+
   - name: "Start caddy"
     systemd:
       name: caddy
