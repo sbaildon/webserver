@@ -57,11 +57,25 @@
     - name: "Clone snakeway"
       git:
         repo: "git@gitlab.com:sBaildon/snakeway.git"
-        dest: "{{ droplet.serve.root_path }}/dev1.baildon.co"
+        dest: "{{ droplet.serve.root_path }}/snakeway"
 
     - name: "Make snakeway"
       make:
         chdir: "{{ droplet.serve.root_path }}/snakeway"
+
+    become: yes
+    become_user: "{{ droplet.users.unprivileged.name }}"
+
+  - name: "agency"
+    block:
+    - name: "Clone agency"
+      git:
+        repo: "git@gitlab.com:sBaildon/agency.git"
+        dest: "{{ droplet.serve.root_path }}/agency"
+
+    - name: "Make agency"
+      make:
+        chdir: "{{ droplet.serve.root_path }}/agency"
 
     become: yes
     become_user: "{{ droplet.users.unprivileged.name }}"
