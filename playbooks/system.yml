@@ -19,6 +19,7 @@
     user:
       name: "{{ droplet.users.personal.name }}"
       password: "{{ personal_password }}"
+      update_password: "on_create"
       generate_ssh_key: true
       ssh_key_bits: 4096
       ssh_key_comment: "{{ droplet.users.personal.name }}@$HOSTNAME"
