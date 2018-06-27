@@ -11,8 +11,8 @@ name = "pypi"
 
 [packages]
 
-ansible = "*"
-dopy = "*"
+ansible = "==2.5.5"
+dopy = "==0.3.3"
 docker-py = "*"
 passlib = "*"
 
