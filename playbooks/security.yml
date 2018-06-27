@@ -1,18 +1,61 @@
 ---
 - hosts: droplet
 
-  vars_prompt:
-  - name: "ssh_port"
-    prompt: "Enter a new ssh port"
-    confirm: yes
-    private: no
-
   tasks:
+  - name: "Install firewalld"
+    dnf:
+      name: firewalld
+
+  - name: "Enable and start firewalld"
+    systemd:
+      name: firewalld
+      enabled: yes
+      state: started
+
+  - name: "Create new zone"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      permanent: true
+      state: present
+
+  - name: "Enable and start firewalld"
+    systemd:
+      name: firewalld
+      state: restarted
+
+  - name: "Set zone for interface"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      interface: eth0
+      permanent: true
+      state: enabled
+
+  - name: "Allow https traffic"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      service: https
+      permanent: true
+      state: enabled
+
+  - name: "Allow ssh traffic"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      service: ssh
+      permanent: true
+      state: enabled
+
+  - name: "Allow custom ssh traffic"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      port: "{{ security.ssh.custom_port  }}/tcp"
+      permanent: true
+      state: enabled
+
   - name: "Change SSH port"
     lineinfile:
       path: /etc/ssh/sshd_config
       regexp: 'Port\s\d'
-      line: "Port {{ ssh_port }}"
+      line: "Port {{ security.ssh.custom_port }}"
 
   - name: "Disallow root login"
     lineinfile:
