@@ -18,12 +18,12 @@
       permanent: true
       state: present
 
-  - name: "Enable and start firewalld"
+  - name: "Reload firewalld config to enable new zone"
     systemd:
       name: firewalld
-      state: restarted
+      state: reloaded
 
-  - name: "Set zone for interface"
+  - name: "Assign new zone to interface"
     firewalld:
       zone: "{{ security.firewalld.zone_name }}"
       interface: eth0
@@ -47,9 +47,14 @@
   - name: "Allow custom ssh traffic"
     firewalld:
       zone: "{{ security.firewalld.zone_name }}"
-      port: "{{ security.ssh.custom_port  }}/tcp"
+      port: "{{ security.ssh.custom_port }}/tcp"
       permanent: true
       state: enabled
+
+  - name: "Enable firewalld changes"
+    systemd:
+      name: firewalld
+      state: restarted
 
   - name: "Change SSH port"
     lineinfile:
