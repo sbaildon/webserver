@@ -25,16 +25,10 @@
       ipv6: false
     register: do_droplet
 
-  - name: "Prompt for ssh port if the VM already existed"
-    pause:
-      prompt: "SSH port"
-    register: custom_ssh_port
-    when: not do_droplet.changed
-
   - name: "Set custom ssh port"
     set_fact:
-      ansible_port: "{{ custom_ssh_port.user_input | int }}"
-    when: custom_ssh_port.user_input is defined
+      ansible_port: "{{ security.ssh.custom_port | int }}"
+    when: not do_droplet.changed
 
   - name: "Gather ssh public key"
     command: "ssh-keyscan -t ecdsa {{ do_droplet.droplet.ip_address }}"
