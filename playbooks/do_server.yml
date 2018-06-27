@@ -25,11 +25,6 @@
       ipv6: false
     register: do_droplet
 
-  - name: "Set custom ssh port"
-    set_fact:
-      ansible_port: "{{ security.ssh.custom_port | int }}"
-    when: not do_droplet.changed
-
   - name: "Gather ssh public key"
     command: "ssh-keyscan -t ecdsa {{ do_droplet.droplet.ip_address }}"
     register: ssh_keyscan_public_key
@@ -42,6 +37,15 @@
     with_items: "{{ ssh_keyscan_public_key.stdout_lines }}"
     when: do_droplet.changed
 
+  - name: "Try ssh on default port"
+    command: "nc -z {{ do_droplet.droplet.ip_address }} 22"
+    register: default_port_login_attempt
+    failed_when: no
+
+  - name: "Set custom ssh port"
+    set_fact: ssh_custom_port="{{ security.ssh.custom_port }}"
+    when: default_port_login_attempt.rc != 0
+
   - name: "Add droplet to inventory"
     add_host:
       name: "{{ do_droplet.droplet.name }}"
@@ -49,4 +53,5 @@
       ansible_host: "{{ do_droplet.droplet.ip_address }}"
       ansible_python_interpreter: "/usr/bin/python3"
       ansible_user: root
-      ansible_port: " {{ custom_ssh_port.user_input | default(22) | int }}"
+      ansible_port: " {{ ssh_custom_port | default(22) | int }}"
+
