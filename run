@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
+#pipenv run ansible-playbook provision.yml
 ansible-playbook provision.yml
