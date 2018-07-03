@@ -39,6 +39,13 @@
       permanent: true
       state: enabled
 
+  - name: "Allow http traffic"
+    firewalld:
+      zone: "{{ security.firewalld.zone_name }}"
+      service: http
+      permanent: true
+      state: enabled
+
   - name: "Allow ssh traffic"
     firewalld:
       zone: "{{ security.firewalld.zone_name }}"
