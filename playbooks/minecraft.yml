@@ -1,0 +1,23 @@
+---
+- hosts: droplet
+
+  tasks:
+    - name: "Minecraft server"
+      docker_container:
+        name: minecraft
+        image: itzg/minecraft-server
+        state: started
+        interactive: yes
+        tty: yes
+        volumes:
+          - "minecraft_server:/data"
+        ports:
+          - "25565:25565"
+        env:
+          ICON: "https://logo.clearbit.com/pizzahut.com"
+          RCON_PASSWORD: "{{ minecraft.password }}"
+          DIFFICULTY: 2
+          INIT_MEMORY: 128M
+          MAX_MEMORY: 500M
+          EULA: TRUE
+        restart_policy: always
