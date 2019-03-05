@@ -29,6 +29,22 @@
       dnf:
         name: docker-ce
 
+  - name: "Install wireguard"
+    block:
+    - name: "Add wireguard repository"
+      yum_repository:
+        name: "wireguard"
+        description: "Copr repo for wireguard owned by jdoss"
+        baseurl: "https://copr-be.cloud.fedoraproject.org/results/jdoss/wireguard/epel-7-$basearch/"
+        gpgcheck: yes
+        gpgkey: "https://copr-be.cloud.fedoraproject.org/results/jdoss/wireguard/pubkey.gpg"
+    - name: "Install wireguard packages"
+      dnf:
+        name: "{{ item }}"
+      with_items:
+        - wireguard-dkms
+        - wireguard-tools
+
   - name: "Install docker-py"
     pip:
       name: docker-py
