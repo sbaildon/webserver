@@ -77,6 +77,12 @@
       regexp: '^PermitRootLogin.*$'
       line: 'PermitRootLogin no'
 
+  - name: "Disallow password login"
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^[#]?PasswordAuthentication.*$'
+      line: 'PasswordAuthentication no'
+
   - name: "Restart sshd"
     systemd:
       name: sshd
