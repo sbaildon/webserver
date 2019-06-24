@@ -45,17 +45,17 @@
       src: "/home/{{ droplet.users.unprivileged.name }}/.ssh/id_rsa.pub"
     register: unprivileged_pub_ssh_key
 
-  - name: "Deploy unprivileged user key to gitlab"
+  - name: "Deploy unprivileged user key to github"
     uri:
-      url: "https://gitlab.com/api/v4/user/keys"
+      url: "https://api.github.com/user/keys"
       method: POST
-      status_code: 200,201,400
+      status_code: 200,201,400,422
       body:
         title: "{{ droplet.users.unprivileged.name }}-auto-provision"
         key: "{{ unprivileged_pub_ssh_key.content | b64decode }}"
       body_format: json
       headers:
-        Private-Token: "{{ gitlab_token }}"
+        Authorization: "token {{ github_token }}"
 
   - name: "SELinux permissive"
     selinux:

@@ -40,10 +40,7 @@
         gpgkey: "https://copr-be.cloud.fedoraproject.org/results/jdoss/wireguard/pubkey.gpg"
     - name: "Install wireguard packages"
       dnf:
-        name: "{{ item }}"
-      with_items:
-        - wireguard-dkms
-        - wireguard-tools
+        name: ['wireguard-dkms', 'wireguard-tools']
 
   - name: "Install docker-py"
     pip:
