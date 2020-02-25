@@ -2,39 +2,6 @@
 - hosts: machine
 
   tasks:
-  - name: "Allow https traffic"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      service: https
-      permanent: yes
-      state: enabled
-
-  - name: "Allow http traffic"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      service: http
-      permanent: yes
-      state: enabled
-
-  - name: "Allow ssh traffic"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      service: ssh
-      permanent: yes
-      state: enabled
-
-  - name: "Allow custom ssh traffic"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      port: "{{ security.ssh.custom_port }}/tcp"
-      permanent: yes
-      state: enabled
-
-  - name: "Enable firewalld changes"
-    systemd:
-      name: firewalld
-      state: restarted
-
   - name: "Change SSH port"
     lineinfile:
       path: /etc/ssh/sshd_config
