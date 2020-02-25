@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
 #pipenv run ansible-playbook provision.yml
-ansible-playbook provision.yml
+PY_PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")' | tr -d '\n')
+
+ANSIBLE_PLAYBOOK="${PY_PATH}/ansible-playbook"
+
+$ANSIBLE_PLAYBOOK provision.yml
