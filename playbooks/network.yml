@@ -1,6 +1,5 @@
-
 ---
-- hosts: droplet
+- hosts: machine
 
   tasks:
   - name: "Install firewalld"

@@ -1,5 +1,5 @@
 ---
-- hosts: droplet
+- hosts: machine
 
   tasks:
     - name: "Minecraft server"

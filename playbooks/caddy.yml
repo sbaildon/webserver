@@ -1,5 +1,5 @@
 ---
-- hosts: droplet
+- hosts: machine
   tasks:
 
     - name: "Copy Caddyfile"
@@ -10,8 +10,8 @@
 
     - name: "Create serve directory"
       file:
-        path: "{{ droplet.serve.root_path }}"
+        path: "{{ machine.serve.root_path }}"
         state: directory
         mode: 0755
-        owner: "{{ droplet.users.unprivileged.name }}"
-        group: "{{ droplet.users.unprivileged.name }}"
+        owner: "{{ machine.users.unprivileged.name }}"
+        group: "{{ machine.users.unprivileged.name }}"

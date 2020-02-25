@@ -1,5 +1,5 @@
 ---
-- hosts: droplet
+- hosts: machine
 
   tasks:
   - name: "Install dependencies"
@@ -13,7 +13,7 @@
 
   - name: "wait for reboot"
     wait_for:
-      host: "{{ droplet.ip_address }}"
+      host: "{{ machine.ip_address }}"
     when: deps.changed
 
   - debug:
