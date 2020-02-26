@@ -78,22 +78,9 @@
       enabled: yes
       state: restarted
 
-  - name: "Create new zone"
+  - name: "Set wireguard interface as trusted"
     firewalld:
-      zone: "wgvpn"
-      permanent: true
-      state: present
-    register: new_zone
-
-  - name: "Reload firewalld config to enable new zone"
-    systemd:
-      name: firewalld
-      state: reloaded
-    when: new_zone.changed
-
-  - name: "Assign new zone to interface"
-    firewalld:
-      zone: "wgvpn"
+      zone: "trusted"
       interface: wg0
       permanent: true
       state: enabled
