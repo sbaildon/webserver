@@ -64,5 +64,3 @@
     systemd:
       name: firewalld
       state: restarted
-
-
