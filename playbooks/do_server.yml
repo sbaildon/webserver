@@ -54,9 +54,8 @@
   - name: "Add droplet to inventory"
     add_host:
       name: "{{ do_droplet.data.droplet.name }}"
-      groups: "machine"
+      groups: "vps"
       ansible_host: "{{ do_droplet.data.ip_address }}"
       ansible_python_interpreter: "/usr/bin/python3"
       ansible_user: root
       ansible_port: " {{ ssh_custom_port | default(22) | int }}"
-

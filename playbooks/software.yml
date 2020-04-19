@@ -1,5 +1,5 @@
 ---
-- hosts: machine
+- hosts: vps
   tasks:
 
   - name: "Perform dnf upate"
@@ -100,13 +100,13 @@
         state: directory
         mode: 0755
         owner: root
-        group: "{{ machine.users.unprivileged.name }}"
+        group: "{{ vps.users.unprivileged.name }}"
     - name: "Create caddy ssl directory"
       file:
         path: /etc/ssl/caddy
         state: directory
         mode: 0770
-        owner: "{{ machine.users.unprivileged.name }}"
+        owner: "{{ vps.users.unprivileged.name }}"
         group: root
     - name: "Caddy service file"
       get_url:

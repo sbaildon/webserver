@@ -1,5 +1,5 @@
 ---
-- hosts: machine
+- hosts: vps
 
   vars_prompt:
   - name: "personal_password"
@@ -17,32 +17,32 @@
 
   - name: "Add personal user"
     user:
-      name: "{{ machine.users.personal.name }}"
+      name: "{{ vps.users.personal.name }}"
       password: "{{ personal_password }}"
       update_password: "on_create"
       generate_ssh_key: true
       ssh_key_bits: 4096
-      ssh_key_comment: "{{ machine.users.personal.name }}@$HOSTNAME"
+      ssh_key_comment: "{{ vps.users.personal.name }}@$HOSTNAME"
       groups:
         - docker
         - wheel
 
   - name: "Add ssh-key for personal user"
     authorized_key:
-      user: "{{ machine.users.personal.name }}"
+      user: "{{ vps.users.personal.name }}"
       state: present
       key: "{{ ssh_pub_key }}"
 
   - name: "Add unprivileged user"
     user:
-      name: "{{ machine.users.unprivileged.name }}"
+      name: "{{ vps.users.unprivileged.name }}"
       generate_ssh_key: true
       ssh_key_bits: 4096
-      ssh_key_comment: "{{ machine.users.unprivileged.name }}@$HOSTNAME"
+      ssh_key_comment: "{{ vps.users.unprivileged.name }}@$HOSTNAME"
 
   - name: "Read unprivileged user's public ssh key"
     slurp:
-      src: "/home/{{ machine.users.unprivileged.name }}/.ssh/id_rsa.pub"
+      src: "/home/{{ vps.users.unprivileged.name }}/.ssh/id_rsa.pub"
     register: unprivileged_pub_ssh_key
 
   - name: "Deploy unprivileged user key to github"
@@ -51,7 +51,7 @@
       method: POST
       status_code: 200,201,400,422
       body:
-        title: "{{ machine.users.unprivileged.name }}-auto-provision"
+        title: "{{ vps.users.unprivileged.name }}-auto-provision"
         key: "{{ unprivileged_pub_ssh_key.content | b64decode }}"
       body_format: json
       headers:

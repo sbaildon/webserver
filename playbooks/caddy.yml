@@ -1,5 +1,5 @@
 ---
-- hosts: machine
+- hosts: vps
   tasks:
 
     - name: "Copy Caddyfile"
@@ -10,8 +10,8 @@
 
     - name: "Create serve directory"
       file:
-        path: "{{ machine.serve.root_path }}"
+        path: "{{ vps.serve.root_path }}"
         state: directory
         mode: 0755
-        owner: "{{ machine.users.unprivileged.name }}"
-        group: "{{ machine.users.unprivileged.name }}"
+        owner: "{{ vps.users.unprivileged.name }}"
+        group: "{{ vps.users.unprivileged.name }}"

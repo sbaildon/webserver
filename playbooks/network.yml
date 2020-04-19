@@ -1,5 +1,5 @@
 ---
-- hosts: machine
+- hosts: vps
 
   tasks:
   - name: "Install firewalld"

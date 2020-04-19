@@ -1,5 +1,5 @@
 ---
-- hosts: machine
+- hosts: vps
   tasks:
 
   - name: "Add github known host"
@@ -12,16 +12,16 @@
       key: "{{ item }}"
     with_items: "{{ github_keyscan_public_key.stdout_lines }}"
     become: yes
-    become_user: "{{ machine.users.unprivileged.name }}"
+    become_user: "{{ vps.users.unprivileged.name }}"
 
   - name: "baildon.co"
     block:
     - name: "Clone baildon.co"
       git:
         repo: "https://github.com/sBaildon/baildon.co.git"
-        dest: "{{ machine.serve.root_path }}/baildon.co"
+        dest: "{{ vps.serve.root_path }}/baildon.co"
       become: yes
-      become_user: "{{ machine.users.unprivileged.name }}"
+      become_user: "{{ vps.users.unprivileged.name }}"
 
     - name: "Install g++"
       dnf:
@@ -29,18 +29,18 @@
 
     - name: "Make baildon.co"
       make:
-        chdir: "{{ machine.serve.root_path }}/baildon.co"
+        chdir: "{{ vps.serve.root_path }}/baildon.co"
       become: yes
-      become_user: "{{ machine.users.unprivileged.name }}"
+      become_user: "{{ vps.users.unprivileged.name }}"
 
   - name: "ui.baildon.co"
     block:
     - name: "Clone ui.baildon.co"
       git:
         repo: "https://github.com/sBaildon/ui.baildon.co.git"
-        dest: "{{ machine.serve.root_path }}/ui.baildon.co"
+        dest: "{{ vps.serve.root_path }}/ui.baildon.co"
       become: yes
-      become_user: "{{ machine.users.unprivileged.name }}"
+      become_user: "{{ vps.users.unprivileged.name }}"
 
     - name: "Install ImageMagick"
       dnf:
@@ -52,9 +52,9 @@
 
     - name: "Make ui.baildon.co"
       make:
-        chdir: "{{ machine.serve.root_path }}/ui.baildon.co"
+        chdir: "{{ vps.serve.root_path }}/ui.baildon.co"
       become: yes
-      become_user: "{{ machine.users.unprivileged.name }}"
+      become_user: "{{ vps.users.unprivileged.name }}"
 
   - name: "Start caddy"
     systemd:
