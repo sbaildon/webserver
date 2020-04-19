@@ -56,34 +56,6 @@
       become: yes
       become_user: "{{ machine.users.unprivileged.name }}"
 
-  - name: "snakeway"
-    block:
-    - name: "Clone snakeway"
-      git:
-        repo: "git@github.com:sbaildon/snakeway.git"
-        dest: "{{ machine.serve.root_path }}/snakeway"
-
-    - name: "Make snakeway"
-      make:
-        chdir: "{{ machine.serve.root_path }}/snakeway"
-
-    become: yes
-    become_user: "{{ machine.users.unprivileged.name }}"
-
-  - name: "agency"
-    block:
-    - name: "Clone agency"
-      git:
-        repo: "git@github.com:sbaildon/twitch-agency.git"
-        dest: "{{ machine.serve.root_path }}/agency"
-
-    - name: "Make agency"
-      make:
-        chdir: "{{ machine.serve.root_path }}/agency"
-
-    become: yes
-    become_user: "{{ machine.users.unprivileged.name }}"
-
   - name: "Start caddy"
     systemd:
       name: caddy
