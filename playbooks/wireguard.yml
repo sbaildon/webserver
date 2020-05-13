@@ -2,20 +2,6 @@
 - hosts: vps
 
   tasks:
-  - name: "Install dependencies"
-    dnf:
-      name: ["kernel-devel", "kernel-headers", "python3-firewall"]
-    register: deps
-
-  - name: "reboot"
-    reboot:
-    when: deps.changed
-
-  - name: "wait for reboot"
-    wait_for:
-      host: "{{ vps.ip_address }}"
-    when: deps.changed
-
   - debug:
       msg: "Maybe you'll need to install kernel first, then wg, then reboot"
 
