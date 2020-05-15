@@ -7,7 +7,15 @@
       name: "Personal"
       oauth_token: "{{ do.api_token }}"
       ssh_pub_key: "{{ ssh_pub_key }}"
-    register: key
+    register: ssh_pub_key
+
+  - name: "Deploy gpg SSH key to DO"
+    digital_ocean_sshkey:
+      state: present
+      name: "Personal Yubikey"
+      oauth_token: "{{ do.api_token }}"
+      ssh_pub_key: "{{ gpg_ssh_pub_key }}"
+    register:  gpg_ssh_pub_key
 
   - name: "Create droplet"
     digital_ocean_droplet:
@@ -18,7 +26,9 @@
       image_id: "{{ do.droplet.image_id }}"
       backups: "{{ do.droplet.backups_enabled  }}"
       oauth_token: "{{ do.api_token }}"
-      ssh_keys: "{{ key.data.ssh_key.id }}"
+      ssh_keys:
+        - "{{ ssh_pub_key.data.ssh_key.id }}"
+        - "{{ gpg_ssh_pub_key.data.ssh_key.id }}"
       wait_timeout: 500
       unique_name: true
       ipv6: yes

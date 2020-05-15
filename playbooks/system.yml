@@ -15,35 +15,42 @@
       name: docker
       state: present
 
+  - name: "Read hostname"
+    command:
+      cmd: "hostname"
+    register: "hostname"
+
   - name: "Add personal user"
     user:
-      name: "{{ vps.users.personal.name }}"
+      name: "{{ users.personal.name }}"
       password: "{{ personal_password }}"
       update_password: "on_create"
       generate_ssh_key: true
       ssh_key_bits: 4096
-      ssh_key_comment: "{{ vps.users.personal.name }}@$HOSTNAME"
+      ssh_key_comment: "{{ users.personal.name }}@{{ hostname.stdout_lines }}"
       groups:
         - docker
         - wheel
 
-  - name: "Add ssh-key for personal user"
+  - name: "Add local ssh key to remote authorized_hosts"
     authorized_key:
-      user: "{{ vps.users.personal.name }}"
+      user: "{{ users.personal.name }}"
       state: present
       key: "{{ ssh_pub_key }}"
 
+  - name: "Add yubikey ssh key to remote authorized_hosts"
+    authorized_key:
+      user: "{{ users.personal.name }}"
+      state: present
+      key: "{{ gpg_ssh_pub_key }}"
+
   - name: "Add unprivileged user"
     user:
-      name: "{{ vps.users.unprivileged.name }}"
+      name: "{{ users.unprivileged.name }}"
       generate_ssh_key: true
       ssh_key_bits: 4096
-      ssh_key_comment: "{{ vps.users.unprivileged.name }}@$HOSTNAME"
-
-  - name: "Read unprivileged user's public ssh key"
-    slurp:
-      src: "/home/{{ vps.users.unprivileged.name }}/.ssh/id_rsa.pub"
-    register: unprivileged_pub_ssh_key
+      ssh_key_comment: "{{ users.unprivileged.name }}@{{ hostname.stdout_lines }}"
+    register:  unprivileged_user
 
   - name: "Deploy unprivileged user key to github"
     uri:
@@ -51,8 +58,8 @@
       method: POST
       status_code: 200,201,400,422
       body:
-        title: "{{ vps.users.unprivileged.name }}-auto-provision"
-        key: "{{ unprivileged_pub_ssh_key.content | b64decode }}"
+        title: "{{ users.unprivileged.name }}-auto-provision"
+        key: "{{ unprivileged_user.ssh_public_key }}"
       body_format: json
       headers:
         Authorization: "token {{ github_token }}"

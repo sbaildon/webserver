@@ -57,10 +57,6 @@
     dnf:
       name: tmux
 
-  - name: "Install nginx"
-    dnf:
-      name: nginx
-
   - name: "Install git"
     dnf:
       name: git
@@ -89,49 +85,3 @@
     - name: "Install yarn"
       dnf:
         name: yarn
-
-  - name: "Install caddy"
-    block:
-    - name: "Get caddy binary"
-      shell: "curl https://getcaddy.com | bash -s personal http.mailout,http.git"
-    - name: "Create caddy directory"
-      file:
-        path: /etc/caddy
-        state: directory
-        mode: 0755
-        owner: root
-        group: "{{ vps.users.unprivileged.name }}"
-    - name: "Create caddy ssl directory"
-      file:
-        path: /etc/ssl/caddy
-        state: directory
-        mode: 0770
-        owner: "{{ vps.users.unprivileged.name }}"
-        group: root
-    - name: "Caddy service file"
-      get_url:
-        url: "https://raw.githubusercontent.com/mholt/caddy/master/dist/init/linux-systemd/caddy.service"
-        dest: /etc/systemd/system/caddy.service
-        mode: 0644
-        owner: root
-        group: root
-    - name: "Set CapabilityBoundingSet"
-      replace:
-        path: /etc/systemd/system/caddy.service
-        regexp: '^;(CapabilityBoundingSet*)'
-        replace: '\1'
-    - name: "Set AmbientCapabilities"
-      replace:
-        path: /etc/systemd/system/caddy.service
-        regexp: '^;(AmbientCapabilities*)'
-        replace: '\1'
-    - name: "Set NoNewPrivileges"
-      replace:
-        path: /etc/systemd/system/caddy.service
-        regexp: '^;(NoNewPrivileges*)'
-        replace: '\1'
-    - name: "Dont protect caddy home"
-      lineinfile:
-        path: /etc/systemd/system/caddy.service
-        regexp: '^ProtectHome.*'
-        line: 'ProtectHome=false'
