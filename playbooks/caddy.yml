@@ -1,17 +1,50 @@
 ---
 - hosts: vps
   tasks:
+  - name: "Add caddy group"
+    group:
+      name: "caddy"
+      state: present
+      system: yes
 
-    - name: "Copy Caddyfile"
-      copy:
-        src: "../resources/Caddyfile"
-        dest: "/etc/caddy/Caddyfile"
+  - name: "Add caddy user"
+    user:
+      name: "caddy"
+      system: yes
+      state: present
+      home: "/var/lib/caddy"
+      shell: "/usr/sbin/nologin"
+      groups:
+        - caddy
+      comment: "Caddy web server"
+
+  - name: "Install caddy"
+    block:
+    - name: "Enable copr repo"
+      command:
+        cmd: dnf copr enable -y @caddy/caddy
+        creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:group_caddy:caddy.repo
+    - name: "Install caddy"
+      dnf:
+        name: caddy
+    - name: "Caddy service file"
+      get_url:
+        url: "https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service"
+        dest: /etc/systemd/system/caddy.service
         mode: 0644
+        owner: root
+        group: root
 
-    - name: "Create serve directory"
-      file:
-        path: "{{ vps.serve.root_path }}"
-        state: directory
-        mode: 0755
-        owner: "{{ vps.users.unprivileged.name }}"
-        group: "{{ vps.users.unprivileged.name }}"
+  - name: "Copy Caddyfile"
+    copy:
+      src: "../resources/Caddyfile"
+      dest: "/etc/caddy/Caddyfile"
+      mode: 0644
+
+  - name: "Create serve directory"
+    file:
+      path: "{{ serve.root_path }}"
+      state: directory
+      mode: 0755
+      owner: "{{ users.unprivileged.name }}"
+      group: "{{ users.unprivileged.name }}"
