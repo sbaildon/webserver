@@ -29,10 +29,6 @@
       dnf:
         name: docker-ce
 
-  - name: "Install wireguard"
-    dnf:
-      name: wireguard-tools
-
   - name: "Install docker-py"
     pip:
       name: docker-py

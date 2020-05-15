@@ -2,8 +2,9 @@
 - hosts: vps
 
   tasks:
-  - debug:
-      msg: "Maybe you'll need to install kernel first, then wg, then reboot"
+  - name: "Install wireguard"
+    dnf:
+      name: wireguard-tools
 
   - name: "Enable net.ipv4.ip_forward"
     sysctl:
