@@ -9,7 +9,11 @@
 
   - name: "Install vim-enhanced"
     dnf:
-      name: vim-enhanced
+      name: "vim-enhanced"
+
+  - name: "Install ripgrep"
+    dnf:
+      name: "ripgrep"
 
   - name: "Install docker-ce"
     block:
