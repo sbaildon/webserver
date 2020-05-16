@@ -9,12 +9,6 @@
     confirm: yes
     salt_size: 7
 
-  tasks:
-  - name: "Add docker group"
-    group:
-      name: docker
-      state: present
-
   - name: "Read hostname"
     command:
       cmd: "hostname"
@@ -29,7 +23,6 @@
       ssh_key_bits: 4096
       ssh_key_comment: "{{ users.personal.name }}@{{ hostname.stdout_lines }}"
       groups:
-        - docker
         - wheel
 
   - name: "Add local ssh key to remote authorized_hosts"

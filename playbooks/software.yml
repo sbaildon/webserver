@@ -15,27 +15,9 @@
     dnf:
       name: "ripgrep"
 
-  - name: "Install docker-ce"
-    block:
-    - name: "Add docker-ce-stable repository"
-      yum_repository:
-        name: docker-ce
-        description: "Docker CE Stable"
-        baseurl: "https://download.docker.com/linux/fedora/$releasever/$basearch/stable"
-        gpgcheck: yes
-        gpgkey: "https://download.docker.com/linux/fedora/gpg"
-    - name: "Install docker-ce"
-      dnf:
-        name: docker-ce
-    - name: "Install docker-py"
-      pip:
-        name: docker-py
-        extra_args: --user
-    - name: "Enable and start docker"
-      systemd:
-        name: docker
-        enabled: yes
-        state: started
+  - name: "Install podman"
+    dnf:
+      name: podman
 
   - name: "Install tmux"
     dnf:
