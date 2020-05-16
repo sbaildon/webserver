@@ -1,5 +1,6 @@
 ---
 - hosts: vps
+
   tasks:
   - name: "Add caddy group"
     group:
