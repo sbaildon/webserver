@@ -6,80 +6,118 @@
     dnf:
       name: wireguard-tools
 
+  - name: "Create wireguard directory"
+    file:
+      path: /etc/wireguard
+      state: directory
+      mode: 0755
+
+  - name: "Generate private key"
+    shell:
+      chdir: "/etc/wireguard/"
+      cmd: "wg genkey | tee private_key"
+      creates: "/etc/wireguard/private_key"
+    register: wireguard_genkey
+
+  - name: "Set private key mode"
+    file:
+      state: file
+      mode: 0600
+      path: "/etc/wireguard/private_key"
+    when: wireguard_genkey.changed
+
+  - name: "Read private key"
+    slurp:
+      src: "/etc/wireguard/private_key"
+    register: slurped_private_key
+
+  - set_fact:
+      private_key: "{{ slurped_private_key.content | b64decode }}"
+
+  - name: "Generate public key"
+    shell:
+      chdir: "/etc/wireguard/"
+      cmd: "cat /etc/wireguard/private_key | wg pubkey | tee public_key"
+      creates: "/etc/wireguard/public_key"
+    register: public_key
+
+  - debug:
+      msg: "Public key {{ public_key.stdout }}"
+    when: public_key.changed
+
+  - name: "Deploy network interface file"
+    copy:
+      src: "../resources/wireguard/wg0.network"
+      dest: "/etc/systemd/network/wg0.network"
+      mode: 0600
+      owner: "systemd-network"
+      group: "systemd-network"
+
+  - name: "Deploy netdev file"
+    template:
+      src: "../resources/wireguard/wg0.netdev.j2"
+      dest: "/etc/systemd/network/wg0.netdev"
+      mode: 0600
+      owner: "systemd-network"
+      group: "systemd-network"
+
   - name: "Enable net.ipv4.ip_forward"
     sysctl:
       name: net.ipv4.ip_forward
-      value: 1
+      value: "1"
       reload: yes
       state: present
 
   - name: "Enable ipv6 forwarding"
     sysctl:
       name: net.ipv6.conf.all.forwarding
-      value: 1
+      value: "1"
       reload: yes
       state: present
 
-  - name: "Enable masquerading"
+  - name: "Enable public masquerading"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      masquerade: yes
+      zone: "public"
+      masquerade: "yes"
       permanent: true
       state: enabled
+      immediate: yes
 
-  - name: "Create wireguard directory"
-    file:
-      path: /etc/wireguard
-      state: directory
-
-  - name: "Generate private keys"
-    shell: wg genkey
-    register: wireguard_genkey
-    changed_when: false
-
-  - set_fact:
-      private_key: "{{ wireguard_genkey.stdout }}"
-
-  - name: "Generate public keys"
-    shell: "echo {{ private_key }} | wg pubkey"
-    register: wireguard_pubkey
-    changed_when: false
-
-  - set_fact:
-      public_key: "{{ wireguard_pubkey.stdout }}"
-
-  - debug:
-      msg: "Public key {{ public_key }}"
-
-  - name: "Configure wireguard"
-    template:
-      src: ../templates/wg0.conf.j2
-      dest: /etc/wireguard/wg0.conf
-      owner: root
-      group: root
-      mode: 600
-
-  - name: "Start wireguard"
-    systemd:
-      name: "wg-quick@wg0"
-      enabled: yes
-      state: restarted
-
-  - name: "Set wireguard interface as trusted"
+  - name: "Assign wireguard interface to internal"
     firewalld:
-      zone: "trusted"
+      zone: "internal"
       interface: wg0
       permanent: true
       state: enabled
 
-  - name: "Allow inital setup wireguard traffic"
+  - name: "Enable internal masquerading"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      port: "51820/udp"
+      zone: "internal"
+      masquerade: "yes"
       permanent: true
       state: enabled
+      immediate: yes
+
+  - name: "Add wireguard service to firewalld"
+    copy:
+      src: "../resources/wireguard/wireguard.xml"
+      dest: "/etc/firewalld/services/wireguard.xml"
+      mode: 0600
 
   - name: "Enable firewalld changes"
     systemd:
       name: firewalld
+      state: restarted
+
+  - name: "Allow wireguard traffic"
+    firewalld:
+      zone: "public"
+      service: "wireguard"
+      permanent: true
+      state: enabled
+      immediate: yes
+
+  - name: "Restart network"
+    systemd:
+      name: systemd-networkd
       state: restarted

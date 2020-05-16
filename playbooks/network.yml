@@ -12,50 +12,26 @@
       enabled: yes
       state: started
 
-  - name: "Create new zone"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      permanent: yes
-      state: present
-    register: new_zone
-
-  - name: "Reload firewalld config to enable new zone"
-    systemd:
-      name: firewalld
-      state: reloaded
-    when: new_zone.changed
-
-  - name: "Assign new zone to interface"
-    firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
-      interface: eth0
-      permanent: yes
-      state: enabled
-
   - name: "Allow https traffic"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
       service: https
       permanent: yes
       state: enabled
 
   - name: "Allow http traffic"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
       service: http
       permanent: yes
       state: enabled
 
   - name: "Allow ssh traffic"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
       service: ssh
       permanent: yes
       state: enabled
 
   - name: "Allow custom ssh traffic"
     firewalld:
-      zone: "{{ security.firewalld.zone_name }}"
       port: "{{ security.ssh.custom_port }}/tcp"
       permanent: yes
       state: enabled
