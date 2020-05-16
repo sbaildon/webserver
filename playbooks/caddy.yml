@@ -36,6 +36,7 @@
         owner: root
         group: root
 
+  # Prefer to use ansible module if it ever exists
   - name: "Copy Caddyfile"
     copy:
       src: "../resources/Caddyfile"
