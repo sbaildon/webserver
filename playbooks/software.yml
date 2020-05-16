@@ -11,10 +11,6 @@
     dnf:
       name: vim-enhanced
 
-  - name: "Install golang"
-    dnf:
-      name: golang
-
   - name: "Install docker-ce"
     block:
     - name: "Add docker-ce-stable repository"
