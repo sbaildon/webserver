@@ -1,0 +1,25 @@
+---
+- hosts: vps
+
+  tasks:
+    - name: "Pi-Hole"
+      docker_container:
+        name: pi-hole
+        image: pihole/pihole:v5.0
+        state: started
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "67:67/udp"
+          - "80:80/tcp"
+          - "443:443/tcp"
+        volumes:
+          - "pihole_data:/etc/pihole/"
+          - "pihole_dnsmasq:/etc/dnsmasq.d/"
+        env:
+          WEBPASSWORD: "test-web"
+          DNS1: "1.1.1.1"
+          DNS2: "1.0.0.1"
+        dns_servers:
+          - "127.0.0.1"
+        restart_policy: "unless-stopped"
