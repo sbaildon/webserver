@@ -35,6 +35,10 @@
     dnf:
       name: wget
 
+  - name: "Install make"
+    dnf:
+      name: make
+
   - name: "Install nodejs"
     dnf:
       name: nodejs

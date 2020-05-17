@@ -37,26 +37,6 @@
       state: present
       key: "{{ gpg_ssh_pub_key }}"
 
-  - name: "Add unprivileged user"
-    user:
-      name: "{{ users.unprivileged.name }}"
-      generate_ssh_key: true
-      ssh_key_bits: 4096
-      ssh_key_comment: "{{ users.unprivileged.name }}@{{ hostname.stdout_lines }}"
-    register:  unprivileged_user
-
-  - name: "Deploy unprivileged user key to github"
-    uri:
-      url: "https://api.github.com/user/keys"
-      method: POST
-      status_code: 200,201,400,422
-      body:
-        title: "{{ users.unprivileged.name }}-auto-provision"
-        key: "{{ unprivileged_user.ssh_public_key }}"
-      body_format: json
-      headers:
-        Authorization: "token {{ github_token }}"
-
   - name: "SELinux permissive"
     selinux:
       policy: targeted
