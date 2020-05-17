@@ -1,0 +1,34 @@
+---
+- hosts: vps
+
+  tasks:
+
+  - name: "Get pi-hole"
+    git:
+      repo: "https://github.com/pi-hole/pi-hole.git"
+      dest: "/opt/pi-hole"
+      depth: 1
+    register: checkout
+
+  - name: create pihole directory
+    file:
+      path: /etc/pihole
+      state: directory
+      mode: 755
+
+  - name: "Copy pi-hole configuration"
+    copy:
+      src: "../resources/pihole/setupVars.conf"
+      dest: "/etc/pihole/setupVars.conf"
+
+  - name: "install pi-hole"
+    command:
+      cmd: "./basic-install.sh --unattended"
+      chdir: "/tmp/pi-hole/automated install/"
+    when: checkout.changed
+
+  - name: "Change lighttpd pihole admin port"
+    replace:
+      path: "/etc/lighttpd/lighttpd.conf"
+      regexp: "80"
+      replace: "1081"
