@@ -2,8 +2,9 @@
 - import_playbook: playbooks/do_server.yml
 - import_playbook: playbooks/system.yml
 - import_playbook: playbooks/software.yml
-- import_playbook: playbooks/git.yml
+- import_playbook: playbooks/pihole
 - import_playbook: playbooks/network.yml
 - import_playbook: playbooks/caddy.yml
+- import_playbook: playbooks/git.yml
 - import_playbook: playbooks/wireguard.yml
 - import_playbook: playbooks/security.yml

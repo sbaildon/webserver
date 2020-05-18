@@ -2,33 +2,20 @@
 - hosts: vps
 
   tasks:
+  - name: "Create pihole container"
+    shell: "{{ lookup('file', '../resources/pihole/setup.sh') }}"
+    args:
+      executable: "/bin/bash"
+    failed_when: no
+    register: container_created
 
-  - name: "Get pi-hole"
-    git:
-      repo: "https://github.com/pi-hole/pi-hole.git"
-      dest: "/opt/pi-hole"
-      depth: 1
-    register: checkout
+  - name: "create pihole service file"
+    shell:
+      cmd: "podman generate systemd --name pihole > /etc/systemd/system/pihole.service"
+    when: container_created.rc == 0
 
-  - name: create pihole directory
-    file:
-      path: /etc/pihole
-      state: directory
-      mode: 755
-
-  - name: "Copy pi-hole configuration"
-    copy:
-      src: "../resources/pihole/setupVars.conf"
-      dest: "/etc/pihole/setupVars.conf"
-
-  - name: "install pi-hole"
-    command:
-      cmd: "./basic-install.sh --unattended"
-      chdir: "/tmp/pi-hole/automated install/"
-    when: checkout.changed
-
-  - name: "Change lighttpd pihole admin port"
-    replace:
-      path: "/etc/lighttpd/lighttpd.conf"
-      regexp: "80"
-      replace: "1081"
+  - name: "Start pihole"
+    systemd:
+      name: pihole
+      enabled: yes
+      state: started
