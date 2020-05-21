@@ -2,10 +2,10 @@
 
 podman create \
 	-d \
-	-p 53:53/tcp \
-	-p 53:53/udp \
-	-p 67:67/udp \
-	-p 1081:80/tcp \
+	-p 10.192.122.1:53:53/tcp \
+	-p 10.192.122.1:53:53/udp \
+	-p 10.192.122.1:67:67/udp \
+	-p 127.0.0.1:1081:80/tcp \
 	--volume pihole_data:/etc/pihole/ \
 	--volume pihole_dnsmasq:/etc/dnsmasq.d/ \
 	--env DNS1=1.1.1.1 \
