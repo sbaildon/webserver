@@ -1,0 +1,50 @@
+---
+- hosts: vps
+
+  tasks:
+  # - name: "Read ip address"
+  #   set_fact: ip_address="{{ ansible_eth0.ipv4.address }}"
+
+  - name: "Add tinyproxy group"
+    group:
+      name: "tinyproxy"
+      state: present
+      system: yes
+
+  - name: "Add tinyproxy user"
+    user:
+      name: "tinyproxy"
+      system: yes
+      state: present
+      home: "/var/lib/tinyproxy"
+      shell: "/usr/sbin/nologin"
+      groups:
+        - tinyproxy
+      comment: "Tinyproxy"
+
+  - name: "Install tinyproxy"
+    dnf:
+      name: "tinyproxy"
+
+  - name: "add tinyproxy config"
+    template:
+      src: "../resources/tinyproxy/tinyproxy.conf.j2"
+      dest: "/etc/tinyproxy/tinyproxy.conf"
+    register: config
+
+  - name: "allow proxy traffic"
+    firewalld:
+      port: "8888/tcp"
+      permanent: true
+      state: enabled
+
+  - name: "Enable firewalld changes"
+    systemd:
+      name: firewalld
+      state: restarted
+
+  - name: "Start tinyproxy"
+    systemd:
+      name: tinyproxy
+      enabled: yes
+      state: restarted

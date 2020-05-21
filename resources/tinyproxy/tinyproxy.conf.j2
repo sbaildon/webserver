@@ -1,0 +1,29 @@
+##User/Group to use after dropping root
+User tinyproxy
+Group tinyproxy
+
+##Port and address to bind to
+Port 8888
+#Listen {{ ip_address }}
+
+##File locations
+LogFile "/var/log/tinyproxy/tinyproxy.log"
+LogLevel Info
+PidFile "/run/tinyproxy/tinyproxy.pid"
+
+##Authentication
+BasicAuth sbaildon {{ tinyproxy.password }}
+
+##HTTP Headers
+ViaProxyName "server-hostname"
+DisableViaHeader No
+
+##Threading
+StartServers 1
+MinSpareServers 0
+MaxSpareServers 5
+MaxRequestsPerChild 0
+
+##Connection
+Timeout 600
+MaxClients 5
