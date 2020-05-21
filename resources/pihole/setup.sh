@@ -11,5 +11,6 @@ podman create \
 	--env DNS1=1.1.1.1 \
 	--env DNS2=1.0.0.1 \
 	--env WEBPASSWORD="" \
+	--dns 127.0.0.1 \
 	--name pihole \
 	docker.io/pihole/pihole:v5.0
