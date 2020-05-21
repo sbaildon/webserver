@@ -51,6 +51,7 @@
       generate_ssh_key: true
       ssh_key_bits: 4096
       ssh_key_comment: "{{ users.unprivileged.name }}"
+      ## system: yes - do this pls
     register:  unprivileged_user
 
   - name: "Deploy unprivileged user key to github"
