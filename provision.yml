@@ -6,5 +6,6 @@
 - import_playbook: playbooks/caddy.yml
 - import_playbook: playbooks/git.yml
 - import_playbook: playbooks/wireguard.yml
+- import_playbook: playbooks/tinyproxy.yml
 - import_playbook: playbooks/pihole.yml
 - import_playbook: playbooks/security.yml
