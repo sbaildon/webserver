@@ -18,7 +18,7 @@
     block:
     - name: "Clone baildon.co"
       git:
-        repo: "https://github.com/sBaildon/baildon.co.git"
+        repo: "https://github.com/sbaildon/baildon.co.git"
         dest: "{{ serve.root_path }}/baildon.co"
       become: yes
       become_user: "{{ users.unprivileged.name }}"
@@ -37,7 +37,7 @@
     block:
     - name: "Clone ui.baildon.co"
       git:
-        repo: "https://github.com/sBaildon/ui.baildon.co.git"
+        repo: "https://github.com/sbaildon/ui.baildon.co.git"
         dest: "{{ serve.root_path }}/ui.baildon.co"
       become: yes
       become_user: "{{ users.unprivileged.name }}"
