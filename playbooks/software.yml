@@ -15,6 +15,10 @@
     dnf:
       name: "ripgrep"
 
+  - name: "Install fd"
+    dnf:
+      name: "fd-find"
+
   - name: "Install podman"
     dnf:
       name: podman
