@@ -7,7 +7,7 @@ Port 8888
 #Listen {{ ip_address }}
 
 ##File locations
-LogFile "/var/log/tinyproxy/tinyproxy.log"
+Syslog On
 LogLevel Info
 PidFile "/run/tinyproxy/tinyproxy.pid"
 
@@ -19,11 +19,11 @@ ViaProxyName "server-hostname"
 DisableViaHeader No
 
 ##Threading
-StartServers 1
-MinSpareServers 1
-MaxSpareServers 5
+StartServers 5
+MinSpareServers 5
+MaxSpareServers 20
 MaxRequestsPerChild 0
 
 ##Connection
 Timeout 600
-MaxClients 5
+MaxClients 100
