@@ -14,17 +14,6 @@
       cmd: "podman generate systemd pihole > /etc/systemd/system/pihole.service"
     when: container_created.rc == 0
 
-  - name: "Allow dns traffic"
-    firewalld:
-      service: dns
-      permanent: yes
-      state: enabled
-
-  - name: "Enable firewalld changes"
-    systemd:
-      name: firewalld
-      state: restarted
-
   - name: "Start pihole"
     systemd:
       name: pihole
