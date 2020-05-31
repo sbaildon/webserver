@@ -120,4 +120,5 @@
   - name: "Restart network"
     systemd:
       name: systemd-networkd
+      enabled: yes
       state: restarted
