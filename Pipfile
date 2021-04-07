@@ -6,7 +6,7 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-ansible = "~=2.9"
+ansible = "~=2.10"
 dopy = "==0.3.3"
 docker-py = "*"
 passlib = "*"
